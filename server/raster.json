@@ -1,0 +1,12 @@
+{
+  "tilejson": "2.1.0",
+  "name": "Gallatin Parcels (PNG + UTFGrid)",
+  "description": "Parcels encoded as images and UTFGrids.",
+  "version": "1.0.0",
+  "tiles": [
+    "http://localhost:3000/{z}/{x}/{y}.png"
+  ],
+  "grids": [
+    "http://localhost:3000/{z}/{x}/{y}.json"
+  ]
+}

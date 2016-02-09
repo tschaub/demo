@@ -4,13 +4,41 @@ const SphericalMercator = require('sphericalmercator');
 const fs = require('fs');
 const http = require('http');
 const mapnik = require('mapnik');
-const tiles = require('./tiles.json');
+const path = require('path');
 const url = require('url');
+
+const metadata = {
+  'raster.json': require('./raster.json'),
+  'vector.json': require('./vector.json')
+};
 
 mapnik.register_default_input_plugins();
 
 const size = 256;
 const merc = new SphericalMercator({size: size});
+
+function renderJson(map, jsonp, callback) {
+  const grid = new mapnik.Grid(size, size);
+  const options = {
+    layer: 0,
+    fields: ['parcelid', 'ownername', 'totalacres']
+  }
+  map.render(grid, options, (err, grid) => {
+    if (err) {
+      return callback(err);
+    }
+    grid.encode({resolution: 4}, (err, json) => {
+      if (err) {
+        return callback(err);
+      }
+      let data = JSON.stringify(json, null, 2);
+      if (jsonp) {
+        data = `${jsonp}(${data})`
+      }
+      callback(null, data);
+    });
+  });
+}
 
 function renderRaster(map, callback) {
   const image = new mapnik.Image(size, size);
@@ -33,7 +61,8 @@ function renderVector(map, x, y, z, callback) {
 }
 
 function render(x, y, z, type, callback) {
-  new mapnik.Map(size, size).load('./config.xml', (err, map) => {
+  const config = path.join(__dirname, 'config.xml');
+  new mapnik.Map(size, size).load(config, (err, map) => {
     if (err) {
       return callback(err);
     }
@@ -41,42 +70,77 @@ function render(x, y, z, type, callback) {
     map.extent = merc.bbox(x, y, z, false, '900913');
     if (type === 'pbf') {
       renderVector(map, x, y, z, callback);
+    } else if (type.indexOf('json') === 0) {
+      const jsonp = type.replace(/^json\:/, '');
+      renderJson(map, jsonp, callback);
     } else {
       renderRaster(map, callback);
     }
   });
 }
 
+function getContentType(type) {
+  if (type === 'pbf') {
+    return 'application/x-protobuf';
+  } else if (type === 'json') {
+    return 'application/json';
+  } else if (type.indexOf('json') === 0) {
+    return 'application/javascript';
+  } else {
+    return 'image/png'
+  }
+}
+
 function handler(request, response) {
-  const parts = url.parse(request.url).path.split('/');
+  const parsed = url.parse(request.url, true);
+  const parts = parsed.pathname.split('/');
   if (parts.length !== 4) {
-    var json = JSON.stringify(tiles);
+    var data = metadata[parts[1]];
+    if (!data) {
+      response.writeHead(400, {
+        'Access-Control-Allow-Origin': '*'
+      });
+      return response.end();
+    }
+    var content = JSON.stringify(data);
+    var contentType = 'application/json';
+    if (parsed.query.callback) {
+      content = `${parsed.query.callback}(${content})`;
+      contentType = 'application/javascript';
+    }
     response.writeHead(200, {
       'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      'Content-Length': json.length
+      'Content-Type': contentType,
+      'Content-Length': content.length
     });
-    response.write(json);
+    response.write(content);
     return response.end();
   }
   const z = Number(parts[1]);
   const x = Number(parts[2]);
   const last = parts[3].split('.')
   const y = Number(last.shift());
-  const type = last.pop();
+  let type = last.pop();
+  if (parsed.query.callback) {
+    type = `${type}:${parsed.query.callback}`;
+  }
   if (isNaN(z) || isNaN(x) || isNaN(y)) {
-    response.writeHead(400);
+    response.writeHead(400, {
+      'Access-Control-Allow-Origin': '*'
+    });
     return response.end('Bad request\n');
   }
   render(x, y, z, type, (err, buffer) => {
     if (err) {
       process.stderr.write(`Rendering failed for [${x}, ${y}, ${z}]: ${err.message}\n`);
-      response.writeHead(500);
+      response.writeHead(500, {
+        'Access-Control-Allow-Origin': '*'
+      });
       return response.end();
     }
     response.writeHead(200, {
       'Access-Control-Allow-Origin': '*',
-      'Content-Type': type === 'pbf' ? 'application/x-protobuf': 'image/png',
+      'Content-Type': getContentType(type),
       'Content-Length': buffer.length
     });
     response.write(buffer);
