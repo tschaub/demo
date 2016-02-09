@@ -1,0 +1,9 @@
+{
+  "tilejson": "2.1.0",
+  "name": "Gallatin Parcels",
+  "description": "Parcels in Gallatin County.",
+  "version": "1.0.0",
+  "tiles": [
+    "http://localhost:3000/{z}/{x}/{y}.pbf"
+  ]
+}

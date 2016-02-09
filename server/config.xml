@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Map background-color="#00000000" srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+
+  <Style name="fill">
+    <Rule>
+      <PolygonSymbolizer fill="#ece7f2"/>
+    </Rule>
+  </Style>
+
+  <Style name="stroke">
+    <Rule>
+      <LineSymbolizer stroke="#DDDDDD" stroke-width="0.5"/>
+    </Rule>
+  </Style>
+
+  <Layer name="parcels" srs="+proj=lcc +lat_1=49 +lat_2=45 +lat_0=44.25 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs">
+    <!-- <StyleName>fill</StyleName> -->
+    <StyleName>stroke</StyleName>
+    <Datasource>
+      <Parameter name="type">postgis</Parameter>
+      <Parameter name="host">localhost</Parameter>
+      <Parameter name="port">5432</Parameter>
+      <Parameter name="dbname">tschaub</Parameter>
+      <Parameter name="user">tschaub</Parameter>
+      <Parameter name="table">gallatin_parcels</Parameter>
+      <Parameter name="geometry_field">geom</Parameter>
+      <Parameter name="srid">32100</Parameter>
+    </Datasource>
+  </Layer>
+
+</Map>
