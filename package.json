@@ -2,10 +2,13 @@
   "name": "demo",
   "version": "1.0.0",
   "scripts": {
+    "test": "eslint examples server",
     "start": "http-server -p 8000",
     "server": "nodemon --watch server server/serve.js"
   },
   "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-config-tschaub": "^2.0.0",
     "http-server": "^0.8.5",
     "mapnik": "^3.4.16",
     "nodemon": "^1.8.1",
@@ -14,5 +17,8 @@
   "dependencies": {
     "mapbox-gl": "^0.14.0",
     "openlayers": "^3.13.1"
+  },
+  "eslintConfig": {
+    "extends": "tschaub"
   }
 }

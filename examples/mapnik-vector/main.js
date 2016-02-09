@@ -51,7 +51,7 @@ var map = new mapboxgl.Map({
 map.on('click', function(event) {
   map.featuresAt(event.point, {layers: ['parcels-fill']}, function(err, features) {
     if (err) {
-      return console.error(err);
+      throw err;
     }
     if (features.length > 0) {
       map.setFilter('parcels-hover-fill', ['==', 'gid', features[0].properties.gid]);

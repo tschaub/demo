@@ -1,7 +1,6 @@
 'use strict'
 
 const SphericalMercator = require('sphericalmercator');
-const fs = require('fs');
 const http = require('http');
 const mapnik = require('mapnik');
 const path = require('path');
@@ -150,5 +149,5 @@ function handler(request, response) {
 
 const server = http.createServer(handler);
 server.listen(3000, () => {
-  console.log(`Listening on http://localhost:${server.address().port}/`);
+  process.stdout.write(`Listening on http://localhost:${server.address().port}/\n`);
 });

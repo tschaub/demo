@@ -1,0 +1,9 @@
+{
+  "globals": {
+    "mapboxgl": false,
+    "ol": false
+  },
+  "rules": {
+    "no-unused-vars": [2, {"varsIgnorePattern": "(map|parse)"}]
+  }
+}

@@ -25,9 +25,9 @@ var map = new ol.Map({
   })
 });
 
-map.on('pointermove', function(event) {
-  var resolution = map.getView().getResolution();
-  grid.getSource().forDataAtCoordinateAndResolution(event.coordinate, resolution, function(data) {
-    console.log(data);
-  }, null, true);
-});
+// map.on('pointermove', function(event) {
+//   var resolution = map.getView().getResolution();
+//   grid.getSource().forDataAtCoordinateAndResolution(event.coordinate, resolution, function(data) {
+//     console.log(data);
+//   }, null, true);
+// });
