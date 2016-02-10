@@ -4,9 +4,19 @@
     <title>Cached Tiles</title>
     <link rel="stylesheet" href="../../node_modules/openlayers/dist/ol.css" type="text/css">
     <link rel="stylesheet" href="../common/style.css" type="text/css">
+    <style>
+      #overlay {
+        background: rgba(0,0,0,0.75);
+        color: white;
+        padding: 10px;
+        margin: 14px 0 0 14px;
+      }
+    </style>
   </head>
   <body>
     <div id="map" class="map"></div>
+    <div id="overlay"></div>
+    <script src="../../node_modules/hashed/dist/hashed.min.js"></script>
     <script src="../../node_modules/openlayers/dist/ol.js"></script>
     <script src="./main.js"></script>
   </body>

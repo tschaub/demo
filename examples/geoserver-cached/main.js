@@ -24,10 +24,7 @@ var map = new ol.Map({
   target: 'map',
   layers: [base, vector, wms],
   controls: [],
-  view: new ol.View({
-    center: ol.proj.fromLonLat([-111.0440, 45.684]),
-    zoom: 12
-  })
+  view: new ol.View()
 });
 
 function parse(collection) {
@@ -35,9 +32,20 @@ function parse(collection) {
   source.clear();
   if (collection && collection.features && collection.features.length) {
     var format = new ol.format.GeoJSON();
-    source.addFeatures(format.readFeatures(collection));
+    var features = format.readFeatures(collection);
+    source.addFeatures(features);
+    var first = features[0];
+    var position = ol.extent.getCenter(first.getGeometry().getExtent());
+    var element = document.getElementById('overlay');
+    element.innerHTML = first.get('ownername') || 'No owner listed';
+    var overlay = new ol.Overlay({
+      position: position,
+      element: element
+    });
+    map.addOverlay(overlay);
   }
 }
+
 
 map.on('click', function(event) {
   var coord = event.coordinate;
@@ -60,4 +68,31 @@ map.on('click', function(event) {
     return key + '=' + encodeURIComponent(params[key]);
   }).join('&');
   head.appendChild(script);
+});
+
+var updateHash = hashed.register({
+  center: {
+    init: ol.proj.fromLonLat([-111.0440, 45.684]),
+    serialize: function(coord) {
+      var lonLat = ol.proj.toLonLat(coord);
+      return lonLat[0].toFixed(3) + ',' + lonLat[1].toFixed(3);
+    },
+    deserialize: function(str) {
+      return ol.proj.fromLonLat(str.split(',').map(Number));
+    }
+  },
+  zoom: 12
+}, function(hash) {
+  var view = map.getView();
+  if ('center' in hash) {
+    view.setCenter(hash.center);
+  }
+  if ('zoom' in hash) {
+    view.setZoom(hash.zoom)
+  }
+});
+
+map.on('moveend', function() {
+  var view = map.getView();
+  updateHash({center: view.getCenter(), zoom: view.getZoom()});
 });

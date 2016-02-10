@@ -54,7 +54,13 @@ map.on('click', function(event) {
       throw err;
     }
     if (features.length > 0) {
-      map.setFilter('parcels-hover-fill', ['==', 'gid', features[0].properties.gid]);
+      var first = features[0];
+      map.setFilter('parcels-hover-fill', ['==', 'gid', first.properties.gid]);
+
+      var popup = new mapboxgl.Popup();
+      popup.setLngLat(event.lngLat);
+      popup.setHTML(first.properties.ownername || 'No owner listed');
+      popup.addTo(map);
     }
   });
 });
