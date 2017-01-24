@@ -7,16 +7,16 @@
     "server": "nodemon --watch server server/serve.js"
   },
   "devDependencies": {
-    "eslint": "^1.10.3",
-    "eslint-config-tschaub": "^2.0.0",
-    "http-server": "^0.8.5",
+    "eslint": "^3.14.0",
+    "eslint-config-tschaub": "^6.0.0",
+    "http-server": "^0.9.0",
     "mapnik": "^3.4.16",
     "nodemon": "^1.8.1",
     "sphericalmercator": "^1.0.4"
   },
   "dependencies": {
-    "hashed": "^1.2.0",
-    "mapbox-gl": "^0.14.0",
+    "hashed": "^4.0.0",
+    "mapbox-gl": "^0.31.0",
     "openlayers": "^3.13.1"
   },
   "eslintConfig": {
